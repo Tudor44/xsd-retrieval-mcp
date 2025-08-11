@@ -13,6 +13,15 @@ import { retrieveXSD, RetrieveXSDArgs } from "../utils/xsd-retriever.js";
 import { validateXSD } from "../utils/xsd-validator.js";
 import { analyzeXSDElements } from "../utils/xsd-analyzer.js";
 
+// Define argument types for clarity and type safety
+interface ValidateXSDArgs {
+  xsd_content: string;
+}
+
+interface ListXSDElementsArgs {
+  xsd_content: string;
+}
+
 class XSDRetrievalServer {
   private server: Server;
 
@@ -106,7 +115,7 @@ class XSDRetrievalServer {
     });
   }
 
-  private async retrieveXSD(args: any) {
+  private async retrieveXSD(args: RetrieveXSDArgs) {
     try {
       const result = await retrieveXSD(args);
       const { source, save_path } = args;
@@ -123,17 +132,17 @@ class XSDRetrievalServer {
         ],
       };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       throw new McpError(
         ErrorCode.InternalError,
-        `Failed to retrieve XSD: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to retrieve XSD from '${args.source}'. Reason: ${errorMessage}`
       );
     }
   }
 
-  private async validateXSD(args: any) {
+  private async validateXSD(args: ValidateXSDArgs) {
     try {
-      const { xsd_content } = args;
-      const validationResult = validateXSD(xsd_content);
+      const validationResult = validateXSD(args.xsd_content);
       
       return {
         content: [
@@ -151,17 +160,17 @@ class XSDRetrievalServer {
         ],
       };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       throw new McpError(
         ErrorCode.InternalError,
-        `Failed to validate XSD: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to validate XSD. Reason: ${errorMessage}`
       );
     }
   }
 
-  private async listXSDElements(args: any) {
+  private async listXSDElements(args: ListXSDElementsArgs) {
     try {
-      const { xsd_content } = args;
-      const analysisResult = analyzeXSDElements(xsd_content);
+      const analysisResult = analyzeXSDElements(args.xsd_content);
       
       return {
         content: [
@@ -180,9 +189,10 @@ class XSDRetrievalServer {
         ],
       };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       throw new McpError(
         ErrorCode.InternalError,
-        `Failed to analyze XSD: ${error instanceof Error ? error.message : String(error)}`
+        `Failed to analyze XSD. Reason: ${errorMessage}`
       );
     }
   }

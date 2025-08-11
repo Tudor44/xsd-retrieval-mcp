@@ -1,3 +1,5 @@
+import { XMLParser } from "fast-xml-parser";
+
 export interface XSDXmlElement {
   name: string;
   type: string;
@@ -13,40 +15,68 @@ export interface XSDAnalysisResult {
 
 export function analyzeXSDElements(xsd_content: string): XSDAnalysisResult {
   try {
+    const trimmedContent = xsd_content.trim();
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: "@_",
+    });
+    const parsedXSD = parser.parse(trimmedContent);
+
+    const schemaElement = parsedXSD["xs:schema"] || parsedXSD["schema"];
+    if (!schemaElement) {
+      throw new Error("No <xs:schema> element found in the provided XSD.");
+    }
+
     const elements: XSDXmlElement[] = [];
+    if (schemaElement["xs:element"]) {
+      const elementNodes = Array.isArray(schemaElement["xs:element"])
+        ? schemaElement["xs:element"]
+        : [schemaElement["xs:element"]];
+
+      for (const el of elementNodes) {
+        elements.push({
+          name: el["@_name"] || "undefined",
+          type: el["@_type"] || "undefined",
+          minOccurs: el["@_minOccurs"] || "1",
+          maxOccurs: el["@_maxOccurs"] || "1",
+        });
+      }
+    }
+
     const complexTypes: string[] = [];
+    if (schemaElement["xs:complexType"]) {
+      const complexTypeNodes = Array.isArray(schemaElement["xs:complexType"])
+        ? schemaElement["xs:complexType"]
+        : [schemaElement["xs:complexType"]];
+      complexTypes.push(
+        ...complexTypeNodes
+          .map((ct) => ct["@_name"])
+          .filter(Boolean)
+      );
+    }
+
     const simpleTypes: string[] = [];
-
-    // Extract element definitions
-    const elementRegex = /<xs:element\s+name="([^"]+)"(?:\s+type="([^"]+)")?(?:\s+minOccurs="([^"]+)")?(?:\s+maxOccurs="([^"]+)")?\s*\/?>/g;
-    let match;
-    while ((match = elementRegex.exec(xsd_content)) !== null) {
-      elements.push({
-        name: match[1],
-        type: match[2] || 'undefined',
-        minOccurs: match[3] || '1',
-        maxOccurs: match[4] || '1',
-      });
-    }
-
-    // Extract complex type definitions
-    const complexTypeRegex = /<xs:complexType\s+name="([^"]+)"/g;
-    while ((match = complexTypeRegex.exec(xsd_content)) !== null) {
-      complexTypes.push(match[1]);
-    }
-
-    // Extract simple type definitions
-    const simpleTypeRegex = /<xs:simpleType\s+name="([^"]+)"/g;
-    while ((match = simpleTypeRegex.exec(xsd_content)) !== null) {
-      simpleTypes.push(match[1]);
+    if (schemaElement["xs:simpleType"]) {
+      const simpleTypeNodes = Array.isArray(schemaElement["xs:simpleType"])
+        ? schemaElement["xs:simpleType"]
+        : [schemaElement["xs:simpleType"]];
+      simpleTypes.push(
+        ...simpleTypeNodes
+          .map((st) => st["@_name"])
+          .filter(Boolean)
+      );
     }
 
     return {
       elements,
       complexTypes,
-      simpleTypes
+      simpleTypes,
     };
   } catch (error) {
-    throw new Error(`Failed to analyze XSD: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Failed to analyze XSD: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
   }
 }

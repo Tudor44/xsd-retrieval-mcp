@@ -1,66 +1,66 @@
 # XSD Retrieval MCP Server
 
-Un server Model Context Protocol (MCP) per il recupero e l'analisi di file XSD (XML Schema Definition).
+A Model Context Protocol (MCP) server for retrieving and analyzing XSD (XML Schema Definition) files.
 
-## Descrizione
+## Description
 
-Questo server MCP fornisce strumenti per recuperare file XSD da URL o percorsi locali, validarli e analizzarne gli elementi. Integrabile con qualsiasi modello LLM.
+This MCP server provides tools to retrieve XSD files from URLs or local paths, validate them, and analyze their elements. It can be integrated with any LLM model.
 
-## Funzionalità
+## Features
 
-Il server fornisce i seguenti strumenti MCP:
+The server provides the following MCP tools:
 
-1. **retrieve_xsd** - Recupera un file XSD da un URL o percorso file
-2. **validate_xsd** - Valida se il contenuto recuperato è un XSD valido
-3. **list_xsd_elements** - Elenca gli elementi definiti in un XSD
+1.  **retrieve_xsd** - Retrieves an XSD file from a URL or file path.
+2.  **validate_xsd** - Validates if the retrieved content is a valid XSD.
+3.  **list_xsd_elements** - Lists the elements defined in an XSD.
 
-## Installazione
+## Installation
 
 ```bash
 npm install
 npm run build
 ```
 
-## Utilizzo
+## Usage
 
-Per eseguire il server:
+To run the server:
 
 ```bash
 npm start
 ```
 
-Il server comunica tramite stdio e può essere integrato con qualsiasi client MCP compatibile.
+The server communicates via stdio and can be integrated with any compatible MCP client.
 
-### Strumento retrieve_xsd
+### `retrieve_xsd` tool
 
-Recupera un file XSD da un URL o percorso locale.
+Retrieves an XSD file from a URL or local path.
 
-Parametri:
-- `source` (string, obbligatorio): URL o percorso file del file XSD
-- `save_path` (string, opzionale): Percorso locale dove salvare il file XSD recuperato
+Parameters:
+- `source` (string, required): URL or file path of the XSD file.
+- `save_path` (string, optional): Local path to save the retrieved XSD file.
 
-### Strumento validate_xsd
+### `validate_xsd` tool
 
-Valida se il contenuto fornito è un XSD valido.
+Validates if the provided content is a valid XSD.
 
-Parametri:
-- `xsd_content` (string, obbligatorio): Contenuto XSD da validare
+Parameters:
+- `xsd_content` (string, required): XSD content to validate.
 
-### Strumento list_xsd_elements
+### `list_xsd_elements` tool
 
-Elenca gli elementi definiti in un XSD.
+Lists the elements defined in an XSD.
 
-Parametri:
-- `xsd_content` (string, obbligatorio): Contenuto XSD da analizzare
+Parameters:.
+- `xsd_content` (string, required): XSD content to analyze
 
-## Contribuire
+## Contributing
 
-1. Fork del repository
-2. Crea un branch per la tua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit delle modifiche (`git commit -m 'Add some AmazingFeature'`)
-4. Push al branch (`git push origin feature/AmazingFeature`)
-5. Apri una Pull Request
+1.  Fork the repository.
+2.  Create a branch for your feature (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
 
-## Licenza
+## License
 
-Distribuito sotto la licenza MIT. Vedi `LICENSE` per ulteriori informazioni.
+Distributed under the MIT License. See `LICENSE` for more information.
