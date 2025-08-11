@@ -1,0 +1,28 @@
+{
+  "name": "xsd-retrieval-mcp-server",
+  "version": "1.0.0",
+  "description": "Un server Model Context Protocol (MCP) per il recupero e l'analisi di file XSD (XML Schema Definition)",
+  "main": "dist/server/xsd-mcp-server.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server/xsd-mcp-server.js"
+  },
+  "keywords": [
+    "mcp",
+    "xsd",
+    "xml",
+    "schema",
+    "retrieval"
+  ],
+  "author": "XSD Retrieval MCP Server Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.2",
+    "axios": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "typescript": "^5.9.2"
+  }
+}
