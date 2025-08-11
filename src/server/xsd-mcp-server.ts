@@ -96,15 +96,21 @@ class XSDRetrievalServer {
     });
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+      if (!request.params.arguments) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Tool arguments are required."
+        );
+      }
       switch (request.params.name) {
         case "retrieve_xsd":
-          return await this.retrieveXSD(request.params.arguments);
+          return await this.retrieveXSD(request.params.arguments as unknown as RetrieveXSDArgs);
         
         case "validate_xsd":
-          return await this.validateXSD(request.params.arguments);
+          return await this.validateXSD(request.params.arguments as unknown as ValidateXSDArgs);
         
         case "list_xsd_elements":
-          return await this.listXSDElements(request.params.arguments);
+          return await this.listXSDElements(request.params.arguments as unknown as ListXSDElementsArgs);
         
         default:
           throw new McpError(

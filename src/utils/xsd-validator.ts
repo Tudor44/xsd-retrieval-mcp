@@ -31,13 +31,12 @@ export function validateXSD(xsd_content: string): ValidationResult {
 
     let namespaces: string[] = [];
     if (schemaElement) {
-      const attrs = schemaElement["@_"];
-      console.log('attrs', attrs);
-      if (attrs) {
-        namespaces = Object.keys(attrs)
-          .filter((attr) => attr.startsWith("@_xmlns"))
-          .map((attr) => `${attr.substring(2)}="${attrs[attr]}"`);
-      }
+        for (const key in schemaElement) {
+            if (key.startsWith('@_xmlns')) {
+                const ns = key.substring(2); // remove '@_'
+                namespaces.push(`${ns}="${schemaElement[key]}"`);
+            }
+        }
     }
 
     let elements: string[] = [];
