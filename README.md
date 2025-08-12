@@ -14,6 +14,10 @@ The server provides the following MCP tools:
 2.  **validate_xsd** - Validates if the retrieved content is a valid XSD.
 3.  **list_xsd_elements** - Lists the elements defined in an XSD.
 
+## Overview Diagram
+![Mermaid Diagram](Visuals/mermaid_diagram.png)
+
+
 ## Installation
 
 ```bash
