@@ -1,30 +1,30 @@
-## Descrizione
+## Description
 
-Descrizione chiara e concisa delle modifiche apportate in questa pull request.
+Clear and concise description of the changes made in this pull request.
 
-## Tipo di cambiamento
+## Type of Change
 
-Elimina le opzioni che non sono rilevanti.
+Delete options that are not relevant.
 
-- [ ] Bug fix (modifica non-breaking che risolve un problema)
-- [ ] Nuova feature (modifica non-breaking che aggiunge funzionalità)
-- [ ] Modifica breaking (fix o feature che causa la modifica di funzionalità esistenti)
-- [ ] Questa modifica richiede un aggiornamento della documentazione
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] This change requires a documentation update
 
-## Come è stato testato?
+## How Has This Been Tested?
 
-Descrivi i test che hai effettuato per verificare le tue modifiche.
+Describe the tests that you ran to verify your changes.
 
-- [ ] Test unitari
-- [ ] Test di integrazione
-- [ ] Test end-to-end
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] End-to-end tests
 
 ## Checklist:
 
-- [ ] Il mio codice segue le linee guida di stile del progetto
-- [ ] Ho effettuato un self-review del mio codice
-- [ ] Ho commentato il mio codice, specialmente nelle aree difficili da capire
-- [ ] Ho apportato le modifiche corrispondenti alla documentazione
-- [ ] Le mie modifiche non generano nuovi warning
-- [ ] Ho aggiunto test che provano che la mia correzione è efficace o che la mia feature funziona
-- [ ] I test nuovi e esistenti passano localmente con le mie modifiche
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
