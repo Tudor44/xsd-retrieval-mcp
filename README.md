@@ -1,66 +1,84 @@
 # XSD Retrieval MCP Server
 
-Un server Model Context Protocol (MCP) per il recupero e l'analisi di file XSD (XML Schema Definition).
+A Model Context Protocol (MCP) server for retrieving and analyzing XSD (XML Schema Definition) files.
 
-## Descrizione
+## Description
 
-Questo server MCP fornisce strumenti per recuperare file XSD da URL o percorsi locali, validarli e analizzarne gli elementi. Integrabile con qualsiasi modello LLM.
+This MCP server provides tools for retrieving XSD files from URLs or local paths, validating them, and analyzing their elements. Integrates with any LLM model.
 
-## Funzionalità
+## Features
 
-Il server fornisce i seguenti strumenti MCP:
+The server provides the following MCP tools:
 
-1. **retrieve_xsd** - Recupera un file XSD da un URL o percorso file
-2. **validate_xsd** - Valida se il contenuto recuperato è un XSD valido
-3. **list_xsd_elements** - Elenca gli elementi definiti in un XSD
+1. **retrieve_xsd** - Retrieve an XSD file from a URL or file path
+2. **validate_xsd** - Validate if the retrieved content is a valid XSD
+3. **list_xsd_elements** - List elements defined in an XSD
+4. **get_mcp_server_info** - Get MCP server information including name and version (v1.2.0+)
 
-## Installazione
+## Installation
 
 ```bash
 npm install
 npm run build
 ```
 
-## Utilizzo
+## Usage
 
-Per eseguire il server:
+To run the server:
 
 ```bash
 npm start
 ```
 
-Il server comunica tramite stdio e può essere integrato con qualsiasi client MCP compatibile.
+The server communicates via stdio and can be integrated with any MCP-compatible client.
 
-### Strumento retrieve_xsd
+### Tool: retrieve_xsd
 
-Recupera un file XSD da un URL o percorso locale.
+Retrieves an XSD file from a URL or local path.
 
-Parametri:
-- `source` (string, obbligatorio): URL o percorso file del file XSD
-- `save_path` (string, opzionale): Percorso locale dove salvare il file XSD recuperato
+Parameters:
+- `source` (string, required): URL or file path to the XSD file
+- `save_path` (string, optional): Local path where to save the retrieved XSD file
 
-### Strumento validate_xsd
+### Tool: validate_xsd
 
-Valida se il contenuto fornito è un XSD valido.
+Validates if the provided content is a valid XSD.
 
-Parametri:
-- `xsd_content` (string, obbligatorio): Contenuto XSD da validare
+Parameters:
+- `xsd_content` (string, required): XSD content to validate
 
-### Strumento list_xsd_elements
+### Tool: list_xsd_elements
 
-Elenca gli elementi definiti in un XSD.
+Lists elements defined in an XSD.
 
-Parametri:
-- `xsd_content` (string, obbligatorio): Contenuto XSD da analizzare
+Parameters:
+- `xsd_content` (string, required): XSD content to analyze
 
-## Contribuire
+### Tool: get_mcp_server_info
 
-1. Fork del repository
-2. Crea un branch per la tua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit delle modifiche (`git commit -m 'Add some AmazingFeature'`)
-4. Push al branch (`git push origin feature/AmazingFeature`)
-5. Apri una Pull Request
+Get MCP server information including name and version.
 
-## Licenza
+Parameters:
+- None
 
-Distribuito sotto la licenza MIT. Vedi `LICENSE` per ulteriori informazioni.
+## Recent Improvements (v1.2.0)
+
+- Enhanced XML/XSD parsing with improved regex patterns for better accuracy
+- Better error handling with graceful degradation for malformed content
+- New `get_mcp_server_info` tool to retrieve server name and version
+- Improved namespace extraction with proper prefix and URI handling
+- Enhanced element attribute extraction for both self-closing and container elements
+- Better deduplication logic for elements with the same name
+- Added comprehensive test suite with 9 new tests for XML parsing
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
