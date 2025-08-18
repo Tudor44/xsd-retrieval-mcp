@@ -22,7 +22,7 @@ export class XSDRetrievalServer {
     this.server = new Server(
       {
         name: "xsd-retrieval-server",
-        version: "0.1.0",
+        version: "1.2.0",
       },
       {
         capabilities: {
@@ -84,6 +84,15 @@ export class XSDRetrievalServer {
               required: ["xsd_content"],
             },
           },
+          {
+            name: "get_mcp_server_info",
+            description: "Get MCP server information including name and version",
+            inputSchema: {
+              type: "object",
+              properties: {},
+              required: [],
+            },
+          },
         ],
       };
     });
@@ -99,7 +108,7 @@ export class XSDRetrievalServer {
               `Invalid arguments for retrieve_xsd: expected source (string) and optional save_path (string)`
             );
           }
-        
+
         case "validate_xsd":
           if (this.isValidValidateXSDArgs(request.params.arguments)) {
             return await this.validateXSD(request.params.arguments);
@@ -109,7 +118,7 @@ export class XSDRetrievalServer {
               `Invalid arguments for validate_xsd: expected xsd_content (string)`
             );
           }
-        
+
         case "list_xsd_elements":
           if (this.isValidListXSDElementsArgs(request.params.arguments)) {
             return await this.listXSDElements(request.params.arguments);
@@ -119,7 +128,10 @@ export class XSDRetrievalServer {
               `Invalid arguments for list_xsd_elements: expected xsd_content (string)`
             );
           }
-        
+
+        case "get_mcp_server_info":
+          return await this.getMcpServerInfo();
+
         default:
           throw new McpError(
             ErrorCode.MethodNotFound,
@@ -132,18 +144,18 @@ export class XSDRetrievalServer {
   // Type guard functions
   private isValidRetrieveXSDArgs(args: any): args is RetrieveXSDArgs {
     return args && typeof args === 'object' &&
-           typeof args.source === 'string' &&
-           (args.save_path === undefined || typeof args.save_path === 'string');
+      typeof args.source === 'string' &&
+      (args.save_path === undefined || typeof args.save_path === 'string');
   }
 
   private isValidValidateXSDArgs(args: any): args is ValidateXSDArgs {
     return args && typeof args === 'object' &&
-           typeof args.xsd_content === 'string';
+      typeof args.xsd_content === 'string';
   }
 
   private isValidListXSDElementsArgs(args: any): args is ListXSDElementsArgs {
     return args && typeof args === 'object' &&
-           typeof args.xsd_content === 'string';
+      typeof args.xsd_content === 'string';
   }
 
   private async retrieveXSD(args: RetrieveXSDArgs) {
@@ -156,9 +168,9 @@ export class XSDRetrievalServer {
           {
             type: "text",
             text: `Successfully retrieved XSD from: ${source}\n\n` +
-                  `Content length: ${result.content.length} characters\n` +
-                  (save_path && result.savedToFile ? `Saved to: ${save_path}\n` : '') +
-                  `\nXSD Content:\n${result.content}`,
+              `Content length: ${result.content.length} characters\n` +
+              (save_path && result.savedToFile ? `Saved to: ${save_path}\n` : '') +
+              `\nXSD Content:\n${result.content}`,
           },
         ],
       };
@@ -174,19 +186,19 @@ export class XSDRetrievalServer {
     try {
       const { xsd_content } = args;
       const validationResult = validateXSD(xsd_content);
-      
+
       return {
         content: [
           {
             type: "text",
             text: `XSD Validation Result:\n\n` +
-                  `Valid XSD: ${validationResult.isValid}\n` +
-                  `Has XML Declaration: ${validationResult.hasXMLDeclaration}\n` +
-                  `Has Schema Element: ${validationResult.hasSchemaElement}\n` +
-                  `Namespaces Found: ${validationResult.namespaces.length}\n` +
-                  `Elements Defined: ${validationResult.elements.length}\n\n` +
-                  `Namespaces:\n${validationResult.namespaces.map(ns => `  - ${ns}`).join('\n')}\n\n` +
-                  `Elements:\n${validationResult.elements.map(el => `  - ${el}`).join('\n')}`,
+              `Valid XSD: ${validationResult.isValid}\n` +
+              `Has XML Declaration: ${validationResult.hasXMLDeclaration}\n` +
+              `Has Schema Element: ${validationResult.hasSchemaElement}\n` +
+              `Namespaces Found: ${validationResult.namespaces.length}\n` +
+              `Elements Defined: ${validationResult.elements.length}\n\n` +
+              `Namespaces:\n${validationResult.namespaces.map(ns => `  - ${ns}`).join('\n')}\n\n` +
+              `Elements:\n${validationResult.elements.map(el => `  - ${el}`).join('\n')}`,
           },
         ],
       };
@@ -202,20 +214,20 @@ export class XSDRetrievalServer {
     try {
       const { xsd_content } = args;
       const analysisResult = analyzeXSDElements(xsd_content);
-      
+
       return {
         content: [
           {
             type: "text",
             text: `XSD Analysis Results:\n\n` +
-                  `Elements (${analysisResult.elements.length}):\n` +
-                  analysisResult.elements.map(el =>
-                    `  - ${el.name} (type: ${el.type}, min: ${el.minOccurs}, max: ${el.maxOccurs})`
-                  ).join('\n') + '\n\n' +
-                  `Complex Types (${analysisResult.complexTypes.length}):\n` +
-                  analysisResult.complexTypes.map(ct => `  - ${ct}`).join('\n') + '\n\n' +
-                  `Simple Types (${analysisResult.simpleTypes.length}):\n` +
-                  analysisResult.simpleTypes.map(st => `  - ${st}`).join('\n'),
+              `Elements (${analysisResult.elements.length}):\n` +
+              analysisResult.elements.map(el =>
+                `  - ${el.name} (type: ${el.type}, min: ${el.minOccurs}, max: ${el.maxOccurs})`
+              ).join('\n') + '\n\n' +
+              `Complex Types (${analysisResult.complexTypes.length}):\n` +
+              analysisResult.complexTypes.map(ct => `  - ${ct}`).join('\n') + '\n\n' +
+              `Simple Types (${analysisResult.simpleTypes.length}):\n` +
+              analysisResult.simpleTypes.map(st => `  - ${st}`).join('\n'),
           },
         ],
       };
@@ -225,6 +237,22 @@ export class XSDRetrievalServer {
         `Failed to analyze XSD: ${error instanceof Error ? error.message : String(error)}`
       );
     }
+  }
+
+  private async getMcpServerInfo() {
+    // Since the Server class doesn't expose name/version directly,
+    // we'll return the hardcoded values from the constructor
+    return {
+      content: [
+        {
+          type: "text",
+          text: `MCP Server Information:\n\n` +
+            `Name: xsd-retrieval-server\n` +
+            `Version: 1.2.0\n` +
+            `Capabilities: {"tools":{}}`,
+        },
+      ],
+    };
   }
 
   async run() {
