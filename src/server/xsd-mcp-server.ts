@@ -2,6 +2,7 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import * as path from "path";
 import {
   CallToolRequestSchema,
   ErrorCode,
@@ -12,8 +13,9 @@ import {
 import { retrieveXSD, RetrieveXSDArgs } from "../utils/xsd-retriever.js";
 import { validateXSD } from "../utils/xsd-validator.js";
 import { analyzeXSDElements } from "../utils/xsd-analyzer.js";
+import { ValidateXSDArgs, ListXSDElementsArgs } from "../types/index.js";
 
-class XSDRetrievalServer {
+export class XSDRetrievalServer {
   private server: Server;
 
   constructor() {
@@ -89,13 +91,34 @@ class XSDRetrievalServer {
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       switch (request.params.name) {
         case "retrieve_xsd":
-          return await this.retrieveXSD(request.params.arguments);
+          if (this.isValidRetrieveXSDArgs(request.params.arguments)) {
+            return await this.retrieveXSD(request.params.arguments);
+          } else {
+            throw new McpError(
+              ErrorCode.InvalidParams,
+              `Invalid arguments for retrieve_xsd: expected source (string) and optional save_path (string)`
+            );
+          }
         
         case "validate_xsd":
-          return await this.validateXSD(request.params.arguments);
+          if (this.isValidValidateXSDArgs(request.params.arguments)) {
+            return await this.validateXSD(request.params.arguments);
+          } else {
+            throw new McpError(
+              ErrorCode.InvalidParams,
+              `Invalid arguments for validate_xsd: expected xsd_content (string)`
+            );
+          }
         
         case "list_xsd_elements":
-          return await this.listXSDElements(request.params.arguments);
+          if (this.isValidListXSDElementsArgs(request.params.arguments)) {
+            return await this.listXSDElements(request.params.arguments);
+          } else {
+            throw new McpError(
+              ErrorCode.InvalidParams,
+              `Invalid arguments for list_xsd_elements: expected xsd_content (string)`
+            );
+          }
         
         default:
           throw new McpError(
@@ -106,7 +129,24 @@ class XSDRetrievalServer {
     });
   }
 
-  private async retrieveXSD(args: any) {
+  // Type guard functions
+  private isValidRetrieveXSDArgs(args: any): args is RetrieveXSDArgs {
+    return args && typeof args === 'object' &&
+           typeof args.source === 'string' &&
+           (args.save_path === undefined || typeof args.save_path === 'string');
+  }
+
+  private isValidValidateXSDArgs(args: any): args is ValidateXSDArgs {
+    return args && typeof args === 'object' &&
+           typeof args.xsd_content === 'string';
+  }
+
+  private isValidListXSDElementsArgs(args: any): args is ListXSDElementsArgs {
+    return args && typeof args === 'object' &&
+           typeof args.xsd_content === 'string';
+  }
+
+  private async retrieveXSD(args: RetrieveXSDArgs) {
     try {
       const result = await retrieveXSD(args);
       const { source, save_path } = args;
@@ -130,7 +170,7 @@ class XSDRetrievalServer {
     }
   }
 
-  private async validateXSD(args: any) {
+  private async validateXSD(args: ValidateXSDArgs) {
     try {
       const { xsd_content } = args;
       const validationResult = validateXSD(xsd_content);
@@ -158,7 +198,7 @@ class XSDRetrievalServer {
     }
   }
 
-  private async listXSDElements(args: any) {
+  private async listXSDElements(args: ListXSDElementsArgs) {
     try {
       const { xsd_content } = args;
       const analysisResult = analyzeXSDElements(xsd_content);

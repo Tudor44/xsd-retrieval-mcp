@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
+import { validateReadPath, validateWritePath } from "./path-validator.js";
 
 export interface RetrieveXSDArgs {
   source: string;
@@ -29,10 +30,8 @@ export async function retrieveXSD(args: RetrieveXSDArgs): Promise<RetrieveXSDRes
       xsdContent = response.data;
     } else {
       // Read from file system
-      if (!fs.existsSync(source)) {
-        throw new Error(`File not found: ${source}`);
-      }
-      xsdContent = fs.readFileSync(source, 'utf8');
+      const validatedSourcePath = validateReadPath(source);
+      xsdContent = fs.readFileSync(validatedSourcePath, 'utf8');
     }
 
     // Validate that it's XML content
@@ -43,11 +42,12 @@ export async function retrieveXSD(args: RetrieveXSDArgs): Promise<RetrieveXSDRes
     // Save to file if save_path is provided
     let savedToFile = false;
     if (save_path) {
-      const dir = path.dirname(save_path);
+      const validatedSavePath = validateWritePath(save_path);
+      const dir = path.dirname(validatedSavePath);
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      fs.writeFileSync(save_path, xsdContent, 'utf8');
+      fs.writeFileSync(validatedSavePath, xsdContent, 'utf8');
       savedToFile = true;
     }
 

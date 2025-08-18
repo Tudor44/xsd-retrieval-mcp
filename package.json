@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "Un server Model Context Protocol (MCP) per il recupero e l'analisi di file XSD (XML Schema Definition)",
   "main": "dist/server/xsd-mcp-server.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server/xsd-mcp-server.js"
+    "start": "node dist/server/xsd-mcp-server.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [
     "mcp",
@@ -18,11 +20,14 @@
   "author": "XSD Retrieval MCP Server Team",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.2",
+    "@modelcontextprotocol/sdk": "^1.17.3",
     "axios": "^1.11.0"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.2.1",
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.1",
     "typescript": "^5.9.2"
   }
 }

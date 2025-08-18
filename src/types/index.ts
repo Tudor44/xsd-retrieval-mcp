@@ -10,6 +10,14 @@ export interface RetrieveXSDResult {
   savedToFile: boolean;
 }
 
+export interface ValidateXSDArgs {
+  xsd_content: string;
+}
+
+export interface ListXSDElementsArgs {
+  xsd_content: string;
+}
+
 export interface ValidationResult {
   isValid: boolean;
   hasXMLDeclaration: boolean;

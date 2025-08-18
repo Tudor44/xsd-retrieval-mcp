@@ -8,36 +8,65 @@ export interface ValidationResult {
 
 export function validateXSD(xsd_content: string): ValidationResult {
   try {
-    // Basic XSD validation checks
-    const isValidXML = xsd_content.trim().startsWith('<?xml') || xsd_content.includes('<');
-    const hasSchemaElement = xsd_content.includes('<xs:schema') || 
-                            xsd_content.includes('<schema') || 
-                            xsd_content.includes('xmlns:xs="http://www.w3.org/2001/XMLSchema"') ||
-                            xsd_content.includes('xmlns="http://www.w3.org/2001/XMLSchema"');
+    // Check if content is empty
+    if (!xsd_content || xsd_content.trim().length === 0) {
+      return {
+        isValid: false,
+        hasXMLDeclaration: false,
+        hasSchemaElement: false,
+        namespaces: [],
+        elements: []
+      };
+    }
+
+    // Trim whitespace
+    const content = xsd_content.trim();
+
+    // Check for XML declaration
+    const hasXMLDeclaration = content.startsWith('<?xml');
+    
+    // Check for schema element (more precise regex)
+    const schemaRegex = /<(?:xs:)?schema\b/i;
+    const hasSchemaElement = schemaRegex.test(content);
+    
+    // Basic XML well-formedness check
+    const isValidXML = hasXMLDeclaration || content.startsWith('<');
+    
+    // More robust schema validation
+    const isSchemaValid = hasSchemaElement && isValidXML;
     
     let validationResult: ValidationResult = {
-      isValid: isValidXML && hasSchemaElement,
-      hasXMLDeclaration: xsd_content.trim().startsWith('<?xml'),
+      isValid: isSchemaValid,
+      hasXMLDeclaration: hasXMLDeclaration,
       hasSchemaElement: hasSchemaElement,
       namespaces: [],
       elements: [],
     };
 
-    // Extract namespaces
-    const namespaceRegex = /xmlns(?::(\w+))?="([^"]+)"/g;
+    // Extract namespaces (improved regex)
+    const namespaceRegex = /xmlns(?::([a-zA-Z_][a-zA-Z0-9_-]*))?="([^"]*)"/g;
     let match;
-    while ((match = namespaceRegex.exec(xsd_content)) !== null) {
-      validationResult.namespaces.push(match[0]);
+    while ((match = namespaceRegex.exec(content)) !== null) {
+      const prefix = match[1] || 'default';
+      const uri = match[2];
+      validationResult.namespaces.push(`${prefix}="${uri}"`);
     }
 
-    // Extract element definitions
-    const elementRegex = /<xs:element\s+name="([^"]+)"/g;
-    while ((match = elementRegex.exec(xsd_content)) !== null) {
+    // Extract element definitions (improved regex)
+    const elementRegex = /<xs:element\s+name="([^"]+)"/gi;
+    while ((match = elementRegex.exec(content)) !== null) {
       validationResult.elements.push(match[1]);
     }
 
     return validationResult;
   } catch (error) {
-    throw new Error(`Failed to validate XSD: ${error instanceof Error ? error.message : String(error)}`);
+    // Return a safe validation result even if parsing fails
+    return {
+      isValid: false,
+      hasXMLDeclaration: false,
+      hasSchemaElement: false,
+      namespaces: [],
+      elements: []
+    };
   }
 }
